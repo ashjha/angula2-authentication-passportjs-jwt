@@ -11,11 +11,16 @@ import {AuthService} from '../auth.service';
 })
 export class DashboardComponent implements OnInit {
 
+    public usr :Object={ "firstname":"", "lastname":"",  "email":"",   "country":"" };
+
   constructor(private router:Router,private _auth:AuthService) { }
 
   ngOnInit() {
+    
     if(!localStorage.getItem('auth_token')){
       this.router.navigate(['/Login']);  
+    }else{
+      this.getUser();
     }
   }
 
@@ -24,13 +29,33 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/Login']);
   }
 
-  pvtdata(){
-    this._auth.pvtData()
+  getUser(){
+    this._auth.getUser()
+      .map(res => res.json()) 
       .subscribe(
-        data=>console.log(data),
-        err=>console.log(err),
+        data=>this.userProfile(data),
+        err=>this.handleError(err),
         ()=>console.log('done')
       )
+  }
+  userProfile(data){
+    {
+      this.usr={
+      "firstname":data.firstname,
+      "lastname":data.lastname,
+      "email":data.email,
+      "country":data.country
+      }
+    }
+  }
+
+  handleError(e){
+    localStorage.removeItem('auth_token');
+    if(e.status==401){ //token expire handle
+      this.router.navigate(['/Login']);
+    }else{
+      this.router.navigate(['/Login']);
+    }
   }
 
 }

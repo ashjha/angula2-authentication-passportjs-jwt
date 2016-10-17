@@ -45,7 +45,7 @@ export class SignupComponent implements OnInit {
   ragistersuccess(d){
     this.cb=d.msg;
     setTimeout(() => {
-      if(d.success) this.router.navigate(['/login']);
+      if(d.success) this.router.navigate(['/Login']);
     }, 5000);  
   }
 

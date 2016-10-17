@@ -41,15 +41,9 @@ const db = {
     cb(null, user);
   },
   authenticate: function(username, password, cb) {
-    // database dummy - find user and verify password
+    // database dummy - find user and verify password   
     if (true||username === 'devils name' && password === '666') {
-      cb(null, {
-        id: 666,
-        firstname: 'devils',
-        lastname: 'name',
-        email: 'devil@he.ll',
-        verified: true
-      });
+      cb(null, {id: 666, firstname: 'devils',    lastname: 'name',    email: 'devil@he.ll',    verified: true      });
     } else {
       cb(null, false);
     }
@@ -77,11 +71,7 @@ app.get('/', function(req, res) {
   });
 });
 
-app.post('/loginusr', passport.initialize(), passport.authenticate(
-  'local', {
-    session: false,
-    scope: []
-  }), serialize, generateToken, respond);
+app.post('/loginusr', passport.initialize(), passport.authenticate('local', { session: false,scope: []}), serialize, generateToken, respond);
 
 
 app.get('/pvtdata', authenticate, function(req, res) {

@@ -1,16 +1,28 @@
 var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+var path = require('path'); //remove on final
+var logger = require('morgan');//remove on final
 var bodyParser = require('body-parser');
-var expressSession = require('express-session')
+
+var USER = require('./model/userSchema');
 var mongoose = require('mongoose');
+
+
+var SECRET = 'server secret';
+
+var expressJwt = require('express-jwt');
+var jwt = require('jsonwebtoken');
+var passport = require('passport');
+var Strategy = require('passport-local');
+var authenticate = expressJwt({
+  secret: SECRET
+});
+
 
 mongoose.connect('mongodb://localhost/passport',function(err){
     if (err) throw err;
-    else console.log('Mondo db connnected');
+    else console.log('Mongo db connnected');
 });
+
 
 var app = express();
 
@@ -20,24 +32,37 @@ app.use(function(req, res, next) {
   next();
 });
 
+passport.use(new Strategy(
+  function(username, password, done) {
+    authenticateCredentials(username, password, done);
+  }
+));
 
-app.use(expressSession({
-  secret:'angular2Demo',
-  resave: true,
-  saveUninitialized: true,
-  cookie:{httpOnly:true}
-}));
+function authenticateCredentials(usr,psw,cb){
+   USER.findOne({email:usr,password:psw},function(err,usr){
+        if(err) {
+            cb(null,false);
+            return;
+        }
+        else if(!usr){
+            cb(null,false);
+            return;
+        }else{            
+            cb(null, {id: usr._id, firstname: usr.firstname,lastname:usr.lastname,email: usr.email,verified: true });
+            return;
+        }
+    })
+}
 
+app.set('views', path.join(__dirname, 'views'));//remove on final
+app.set('view engine', 'jade');//remove on final
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-app.use(logger('dev'));
+app.use(logger('dev'));//remove on final
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));//remove on final
 
-require('./routes/api')(app);
+require('./routes/api')(app, passport , Strategy , authenticate);
+
+app.listen(3000);
 module.exports = app;

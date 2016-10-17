@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
       .map(res => res.json())
       .subscribe(
         data => this.loginsuccess(data),
-        err => this.cb=err,
+        err => this.handleError(err),
         () => this.done()
       )
   }
@@ -36,6 +36,10 @@ export class LoginComponent implements OnInit {
       localStorage.setItem('auth_token',d.auth_token)
       this.router.navigate(['/Profile']);
     };
+  }
+  handleError(err){
+    console.log(err);
+    this.cb='Invalid credentials please try again';
   }
   done(){
     console.log('Done');

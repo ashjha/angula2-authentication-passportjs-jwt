@@ -32,7 +32,7 @@ export class AuthService {
         return this._http.post('http://localhost:3000/loginusr',usr);
     }
 
-    pvtData(){
+    getUser(){
         var jwt = localStorage.getItem('auth_token');
         var authHeader = new Headers();        
         if(jwt){
