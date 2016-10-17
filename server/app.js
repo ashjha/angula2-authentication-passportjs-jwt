@@ -54,6 +54,8 @@ function authenticateCredentials(usr,psw,cb){
     })
 }
 
+app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
+
 app.set('views', path.join(__dirname, 'views'));//remove on final
 app.set('view engine', 'jade');//remove on final
 

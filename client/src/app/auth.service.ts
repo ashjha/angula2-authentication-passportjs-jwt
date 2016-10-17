@@ -7,26 +7,7 @@ import 'rxjs/add/operator/map'
 export class AuthService {
     isLoggedin: boolean;
 
-    constructor(private _http: Http) {
-
-    }
-
-    loginfn(usercreds) {
-        /* this.isLoggedin = false;
-         var headers = new Headers();
-         var creds = 'name=' + usercreds.username + '&password=' + usercreds.password;
-         headers.append('Content-Type', 'application/X-www-form-urlencoded');
-         return new Promise((resolve) => {
-         this._http.post('http://localhost:3333/authenticate', creds, {headers: headers}).subscribe((data) => {
-             if(data.json().success) {
-                 window.localStorage.setItem('auth_key', data.json().token);
-                 this.isLoggedin = true;}
-                 resolve(this.isLoggedin)
-             }
-         )
-         
-         })*/
-    }
+    constructor(private _http: Http) {    }
 
     loginUsr(usr){
         return this._http.post('http://localhost:3000/loginusr',usr);
@@ -43,5 +24,20 @@ export class AuthService {
 
     ragisterUsr(usr) {       
         return this._http.post('http://localhost:3000/addnewusr',usr);            
+    }
+
+    fbLogin(){
+        // return this._http.post('http://localhost:3000/fbLogin',{});
+        return this._http.get('http://localhost:3000/login/facebook');
+    }
+
+    facebookLogin(){
+        let token = localStorage.getItem('fb_token');
+        let fbData = localStorage.getItem('fb_data');
+        let authHeader = new Headers();        
+        if(token){
+            authHeader.append('Authorization','Bearer '+token);
+        }
+        return this._http.post('http://localhost:3000/fbLogin',{fb:fbData});
     }
 }
