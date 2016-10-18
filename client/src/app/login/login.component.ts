@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit ,AfterContentInit {
   }
 
   ngOnInit() {
-    this.user={username:'aj@gmail.com',password:'ashutoshjha'}
+    this.user={username:'',password:''}
   }
 
   ngAfterContentInit() {
@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit ,AfterContentInit {
   }
 
   loginsuccess(d){
-    this.cb=d.auth_token||d.msg;
+    this.cb=d.msg||'';    
     if(d.auth_token) {
       localStorage.setItem('auth_token',d.auth_token)
       this.router.navigate(['/Profile']);
@@ -83,7 +83,7 @@ export class LoginComponent implements OnInit ,AfterContentInit {
     this._auth.facebookLogin()
      .map(res => res.json())
      .subscribe(
-        data => console.log(data),
+        data => this.loginsuccess(data),
         err => console.log(err),
         () => this.done()
       )
@@ -93,6 +93,7 @@ export class LoginComponent implements OnInit ,AfterContentInit {
   handleError(err){
     console.log(err);
     this.cb='Invalid credentials please try again';
+    setTimeout(function(){this.cb='';},3000);
   }
   done(){
     console.log('Done');

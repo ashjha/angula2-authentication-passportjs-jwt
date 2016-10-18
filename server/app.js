@@ -7,6 +7,10 @@ var USER = require('./model/userSchema');
 var mongoose = require('mongoose');
 
 
+var FACEBOOK_APP_ID = '370960789960977';
+var FACEBOOK_APP_SECRET='e12daa5e8407332c09848499c8d54edc';
+
+
 var SECRET = 'server secret';
 
 var expressJwt = require('express-jwt');
@@ -38,6 +42,39 @@ passport.use(new Strategy(
   }
 ));
 
+
+var FacebookTokenStrategy = require('passport-facebook-token');
+
+passport.use(new FacebookTokenStrategy({
+    clientID: FACEBOOK_APP_ID,
+    clientSecret: FACEBOOK_APP_SECRET
+  }, function(accessToken, refreshToken, profile, done) {       
+    /*console.log(profile.id);
+    return done(null,profile);*/
+    USER.findOne({facebookID:profile.id},function(err,usr){
+        if(err) {
+            done(null,false);
+            return;
+        }
+        else if(!usr){
+            done(null,false);
+            return;
+        }else{            
+            done(null, {id: usr._id, firstname: usr.firstname,lastname:usr.lastname,email: usr.email,verified: true });
+            return;
+        }
+    })
+  }
+));
+
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
 function authenticateCredentials(usr,psw,cb){
    USER.findOne({email:usr,password:psw},function(err,usr){
         if(err) {
@@ -54,7 +91,7 @@ function authenticateCredentials(usr,psw,cb){
     })
 }
 
-app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
+// app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
 
 app.set('views', path.join(__dirname, 'views'));//remove on final
 app.set('view engine', 'jade');//remove on final
@@ -63,6 +100,9 @@ app.use(logger('dev'));//remove on final
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));//remove on final
+
+app.use(passport.initialize());
+//app.use(passport.session());
 
 require('./routes/api')(app, passport , Strategy , authenticate);
 

@@ -4,31 +4,6 @@ var SECRET = 'server secret';
 var TOKENTIME = 60 * 60;
 
 
-var passport = require('passport');
-var Strategy = require('passport-facebook').Strategy;
-
-passport.use(new Strategy({
-    clientID:'370960789960977',
-    clientSecret:'e12daa5e8407332c09848499c8d54edc',
-    callbackURL: 'http://localhost:3000/login/facebook/return'
-  },
-  function(accessToken, refreshToken, profile, cb) {
-    // In this example, the user's Facebook profile is supplied as the user
-    // record.  In a production-quality application, the Facebook profile should
-    // be associated with a user record in the application's database, which
-    // allows for account linking and authentication with other identity
-    // providers.
-    return cb(null, profile);
-}));
-
-passport.serializeUser(function(user, cb) {
-  cb(null, user);
-});
-
-passport.deserializeUser(function(obj, cb) {
-  cb(null, obj);
-});
-
 
 exports.addnewusr=function(req,res){
 
@@ -58,25 +33,80 @@ exports.addnewusr=function(req,res){
 }
 
 exports.loginusr=function(req,res){
-
   req.token = jwt.sign({
     id: req.user.id,    
   }, SECRET, {
     expiresIn: TOKENTIME
   });
-   res.status(200).send({ user: req.user, auth_token: req.token});
+   res.send({ user: req.user, auth_token: req.token});
+}
+
+exports.fbLoginAuth =function(req,res){
+  req.token = jwt.sign({
+    id: req.user.id,    
+  }, SECRET, {
+    expiresIn: TOKENTIME
+  });
+   res.send({ user: req.user, auth_token: req.token});     
 }
 
 exports.profile=function(req,res){
+  if(req.headers.authorization){
     var decoded = jwt.decode(req.headers.authorization.split(' ')[1], SECRET);
-    if(decoded.id){
+    if(decoded && decoded.id){
         USER.findById(decoded.id,function(err,usr){
             res.send(usr);
         });
     }
-}   
-
-exports.fbLogin=function(req,res){
-    
-    passport.authenticate('facebook');
+  }else{
+    res.send({});
+  }
 }
+   
+
+exports.fbLogin=function(req,res){    
+     
+    // do something with req.user 
+    res.send(req.user? 'a' : 'b');
+   
+}
+
+exports.fbSignup=function(req,res){    
+    if(!req.body.fb){
+        res.send();
+      }
+    var d =  JSON.parse(req.body.fb);
+    console.log(d);
+    USER.find({facebookID:d.id},function(err,data){
+        if(!err && data.length==0){
+            var user = new USER({
+                facebookID   :d.id,
+                firstname    :d.first_name,
+                lastname     :d.last_name,
+                email        :d.email||d.id+'@facebook.com',
+                country      :d.country||'US',
+                password     :d.email?(d.email).split('@')[0]:'12345',
+                coverPhoto   :d.cover?d.cover.source:'',
+                profilePic    :'https://graph.facebook.com/'+d.id+'/picture?type=large'          
+        });
+        user.save(function (err,data){
+            if (err) {
+                if(err.code==11000){
+                    res.send({success:false,msg:'Oops! ,this data is already exists in database'});
+                    return;
+                }            
+                res.send({success:false,msg:'Somthing went wrong please try again'});
+                return;
+            }
+            else {
+                res.send({success:true,msg:'Hi ,'+data.firstname+' Congratulation , now you can login '});
+                return;
+        }
+    })
+
+        }else{
+            res.send({success:true,msg:'Hi ,you are already registered'});
+        }
+    })
+}
+

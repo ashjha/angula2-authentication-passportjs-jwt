@@ -11,21 +11,22 @@ import {AuthService} from '../auth.service';
 })
 export class DashboardComponent implements OnInit {
 
-    public usr :Object={ "firstname":"", "lastname":"",  "email":"",   "country":"" };
+    public usr :Object={ "firstname":"", "lastname":"",  "email":"",   "country":"" ,'profilePic':'' };
 
   constructor(private router:Router,private _auth:AuthService) { }
 
   ngOnInit() {
     
-    if(!localStorage.getItem('auth_token')){
-      this.router.navigate(['/Login']);  
-    }else{
+    if(localStorage.getItem('auth_token')||localStorage.getItem('fb_token')){       
       this.getUser();
+    }else{
+       this.router.navigate(['/Login']);
     }
   }
 
   logout(){
-    localStorage.removeItem('auth_token');
+    // localStorage.removeItem('auth_token');
+    localStorage.clear();
     this.router.navigate(['/Login']);
   }
 
@@ -44,8 +45,10 @@ export class DashboardComponent implements OnInit {
       "firstname":data.firstname,
       "lastname":data.lastname,
       "email":data.email,
-      "country":data.country
+      "country":data.country,
+      "profilePic":data.profilePic||''
       }
+      
     }
   }
 

@@ -8,7 +8,10 @@ var User = new Schema({
     lastname     : String,
     email  : {type:String,unique:true},
     country     : String,
-    password : String
+    password : String,
+	facebookID   :{type:String,unique:true},
+    coverPhoto   :String,
+    profilePic:String
 });
 
 module.exports=mongoose.model('user',User,'user');

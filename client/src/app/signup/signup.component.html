@@ -1,6 +1,10 @@
 {{cb}}
-<div class="login">
-  <h1>Ragistration</h1>
+
+<div class="login">  
+  <h1>Registration</h1>
+  <!--<button (click)='fbSignup()'>Facebook</button>-->
+  <input type="image" src="http://www.thewiprochennaimarathon.com/images/signup_fb.png" alt="FB" (click)='fbSignup()'>
+  <hr>
   <form (ngSubmit)='ragisterUsr()' name='rags'>
     <input type="text" [(ngModel)]='newUsr.fname' name="fn" placeholder="First Name" required="required" />
     <input type="text" [(ngModel)]='newUsr.lname' name="ln" placeholder="Last Name"  />
