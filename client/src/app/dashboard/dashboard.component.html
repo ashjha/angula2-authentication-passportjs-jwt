@@ -6,6 +6,11 @@
 <div *ngIf='usr.profilePic'>
   <img [src]='usr.profilePic' alt='profile photo' />
 </div>
+
+<div *ngIf='!usr.profilePic'>
+  <input type="image" src="http://www.thewiprochennaimarathon.com/images/signup_fb.png" alt="FB" (click)='intWidFB()'/>
+</div>
+
 <p>Email-Id : {{usr.email}}</p>
 <p>Country : {{usr.country}}</p>
        

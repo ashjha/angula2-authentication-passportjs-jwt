@@ -57,4 +57,13 @@ export class AuthService {
         // return this._http.post('http://localhost:3000/fbLogin',{fb:fbData},{headers:authHeader});
         return this._http.post('http://localhost:3000/fbLoginAuth',{fb:fbData},{headers:authHeader});
     }
+    intWidFB(){
+        var jwt = localStorage.getItem('auth_token');
+        var authHeader = new Headers();        
+        if(jwt){
+            authHeader.append('Authorization','Bearer '+jwt);
+        }
+        let fbData = localStorage.getItem('fb_data');              
+        return this._http.post('http://localhost:3000/intWidFB',{fb:fbData}, {headers:authHeader});
+    }
 }

@@ -25,12 +25,10 @@ export class SignupComponent implements OnInit {
     }
 
   newUsr: any;
-  cb:any;
-  fbImg:any;
+  cb:any;  
 
   ngOnInit() {
-    this.frmReset();
-    this.fbImg='../shared/connect-facebook-button.png';
+    this.frmReset();    
   }
 
   frmReset(){

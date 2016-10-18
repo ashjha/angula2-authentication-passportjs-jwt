@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router} from '@angular/router';
+import {FacebookService, FacebookLoginResponse,FacebookInitParams} from 'ng2-facebook-sdk/dist';
 import {AuthService} from '../auth.service';
 
 
@@ -7,13 +8,20 @@ import {AuthService} from '../auth.service';
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
-  providers:[AuthService]
+  providers:[AuthService,FacebookService]
 })
 export class DashboardComponent implements OnInit {
 
     public usr :Object={ "firstname":"", "lastname":"",  "email":"",   "country":"" ,'profilePic':'' };
 
-  constructor(private router:Router,private _auth:AuthService) { }
+  constructor(private router:Router,private _auth:AuthService , private fb: FacebookService) {
+     let fbParams: FacebookInitParams = {
+                  appId: '370960789960977',
+                  xfbml: true,
+                  version: 'v2.6'
+                  };
+    this.fb.init(fbParams);
+   }
 
   ngOnInit() {
     
@@ -50,6 +58,43 @@ export class DashboardComponent implements OnInit {
       }
       
     }
+  }
+
+  intWidFB(){
+    this.fb.login().then(
+          (response: FacebookLoginResponse) => this.facebookCB(response),
+          (error: any) => console.error(error)
+        );
+  }
+
+  facebookCB(res){   
+    if(res.authResponse.accessToken){
+      localStorage.setItem('fb_token',res.authResponse.accessToken);
+      this.fb.api('/me',null,{fields: 'first_name,last_name,email,about,hometown,cover'}).then(
+        (response: FacebookLoginResponse) => localStorage.setItem('fb_data',JSON.stringify(response)),
+        (error: any) => console.error(error)
+      );
+    }
+    this._auth.intWidFB()
+     .map(res => res.json())
+     .subscribe(
+        data => this.intWidFBData(data),
+        err => this.intWidFBErr(err),
+        () => console.log('Done...')
+      )
+  }
+  
+  intWidFBData(data){
+    console.log(data);
+    if(!data.err){
+       location.reload();
+    } else{
+      alert('Somthing went wrong please try again');
+    }
+  }
+
+  intWidFBErr(err){
+    console.log(err);
   }
 
   handleError(e){

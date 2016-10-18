@@ -12,7 +12,10 @@ exports.addnewusr=function(req,res){
         lastname     : req.body.lname,
         email  : req.body.email,
         country     : req.body.country,
-        password : req.body.password
+        password : req.body.password,
+        facebookID:'',
+        coverPhoto   :'',
+        profilePic    : '' 
     });
 
     user.save(function (err,data){
@@ -71,12 +74,34 @@ exports.fbLogin=function(req,res){
    
 }
 
+exports.intWidFB=function(req,res){
+var d =  JSON.parse(req.body.fb);
+ if(req.headers.authorization){
+    var decoded = jwt.decode(req.headers.authorization.split(' ')[1], SECRET);    
+    if(decoded && decoded.id){        
+        // res.send(decoded.id+'-'+d.id);
+        USER.findByIdAndUpdate(decoded.id,{ $set:{
+            facebookID:d.id ,
+            coverPhoto:d.cover?d.cover.source:'',
+            profilePic :'https://graph.facebook.com/'+d.id+'/picture?type=large'
+        }},function(err,usr){
+            res.send({err:err,usr:usr});
+        });
+    }else{
+        res.send({err:true,usr:null});
+    }
+  }else{
+    res.send({err:true,usr:null});
+  }
+
+}
+
 exports.fbSignup=function(req,res){    
     if(!req.body.fb){
         res.send();
       }
     var d =  JSON.parse(req.body.fb);
-    console.log(d);
+    // console.log(d);
     USER.find({facebookID:d.id},function(err,data){
         if(!err && data.length==0){
             var user = new USER({

@@ -13,4 +13,5 @@ module.exports = function (app , passport , Strategy , authenticate) {
   // app.post('/fbLogin',passport.authenticate('facebook-token'),API.fbLogin);  
   // app.get('/fb',API.fbLogin);  
   app.post('/fbLoginAuth',passport.authenticate('facebook-token'),API.fbLoginAuth)
+  app.post('/intWidFB',authenticate,API.intWidFB);
 }

@@ -84,10 +84,20 @@ export class LoginComponent implements OnInit ,AfterContentInit {
      .map(res => res.json())
      .subscribe(
         data => this.loginsuccess(data),
-        err => console.log(err),
+        err => this.fbErr(err),
         () => this.done()
       )
 
+  }
+
+  fbErr(e){    
+    if(e.statusText=="Unauthorized"){
+      this.cb='You are not registered , please register with FB';
+      setTimeout(()=> {
+        this.router.navigate(['/Signup']);  
+      }, 3000);
+      
+    }
   }
 
   handleError(err){
