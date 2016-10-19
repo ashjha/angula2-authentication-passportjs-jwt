@@ -78,7 +78,7 @@ export class SignupComponent implements OnInit {
      .map(res => res.json())
      .subscribe(
         data => this.loginWithFB(data),
-        err => console.log(err),
+        err => this.cb='Something went wrong please try again',
         () => this.done()
       )
   }
@@ -89,7 +89,7 @@ export class SignupComponent implements OnInit {
     setTimeout(() => {
       this.cb='';
       this.router.navigate(['/Login']);
-    }, 5000);  
+    }, 2000);  
     }
   }
 

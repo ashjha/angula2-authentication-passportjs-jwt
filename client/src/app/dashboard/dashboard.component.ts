@@ -13,6 +13,7 @@ import {AuthService} from '../auth.service';
 export class DashboardComponent implements OnInit {
 
     public usr :Object={ "firstname":"", "lastname":"",  "email":"",   "country":"" ,'profilePic':'' };
+    public cb :any ='';
 
   constructor(private router:Router,private _auth:AuthService , private fb: FacebookService) {
      let fbParams: FacebookInitParams = {
@@ -25,7 +26,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     
-    if(localStorage.getItem('auth_token')||localStorage.getItem('fb_token')){       
+    if(localStorage.getItem('auth_token')){       
       this.getUser();
     }else{
        this.router.navigate(['/Login']);
@@ -80,7 +81,9 @@ export class DashboardComponent implements OnInit {
      .subscribe(
         data => this.intWidFBData(data),
         err => this.intWidFBErr(err),
-        () => console.log('Done...')
+        () => setTimeout(()=> {
+          this.cb='';
+        }, 2000)
       )
   }
   
@@ -89,7 +92,8 @@ export class DashboardComponent implements OnInit {
     if(!data.err){
        location.reload();
     } else{
-      alert('Somthing went wrong please try again');
+      if(data.err.code==11000) this.cb='This account is already registered with another account';
+      else this.cb='Somthing went wrong please try again';
     }
   }
 

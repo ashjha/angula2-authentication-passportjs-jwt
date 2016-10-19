@@ -3,6 +3,7 @@
   
   <li style="float:right"><a (click)='logout()' class="active" href="javascript:void(0)">Logout</a></li>
 </ul>
+<p class='flash'>{{cb}}</p>
 <div *ngIf='usr.profilePic'>
   <img [src]='usr.profilePic' alt='profile photo' />
 </div>

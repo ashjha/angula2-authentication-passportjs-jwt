@@ -130,8 +130,7 @@ exports.fbSignup=function(req,res){
     })
 
         }else{
-            res.send({success:true,msg:'Hi ,you are already registered'});
+            res.send({success:true,msg:'You are already registered , login now'});
         }
     })
 }
-

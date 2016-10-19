@@ -29,3 +29,8 @@ input[type='image']{
     width: 20%;
     float: right;
 }
+.flash{
+	text-align: center;
+    color: red;
+    font-size: 25px;
+}
