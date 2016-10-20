@@ -25,8 +25,12 @@ li a:hover:not(.active) {
 .active {
     background-color: #4CAF50;
 }
-input[type='image']{
+.in{
     width: 20%;
+    float: right;
+}
+.fb{
+    width: 16%;
     float: right;
 }
 .flash{
